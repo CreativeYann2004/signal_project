@@ -66,3 +66,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Project Members
 - Student ID: i6340643
+
+## UML Diagram Link:
+[UML Diagram](uml_models/SignalProject%20UML%20diagram.pdf)
