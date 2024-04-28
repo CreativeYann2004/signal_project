@@ -71,4 +71,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## UML Diagram Link:
 [UML Diagram](uml_models/SignalProject%20UML%20diagram.pdf)
 ## Link to ReadME for Sequence and State Diagram:
-
+[Diagrams](uml_models/UmlDiagrams/README%20Diagrams.md)
