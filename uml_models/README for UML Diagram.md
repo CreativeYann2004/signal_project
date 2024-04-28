@@ -29,3 +29,6 @@ When creating this UML model, my goal was to define a modular and flexible archi
 Future enhancements could include more detailed simulation capabilities for additional metrics and improved integration with real-time data analysis tools.
 This model serves as a basic guide of the Signal project and provides a structured approach for understanding and extending the capabilities of the system.
 
+## Link to the UML Diagram:
+[UML Diagram](uml_models/SignalProject%20UML%20diagram.pdf)
+
