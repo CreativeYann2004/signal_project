@@ -1,5 +1,8 @@
 ## Documentation of the sequence diagram:
-Alarm generation processw
+Alarm generation process
+## Link to sequence diagram:
+[Sequence Diagram](uml_models/UmlDiagrams/Sequence%20diagram.png)
+
 ## Overview
 The sequence diagram shows the interaction between the DataStorage, AlertGenerator and AlertManager components within the health monitoring system 
 when a threshold value is exceeded.
@@ -29,6 +32,9 @@ The sequence diagram successfully outlines the critical steps in the alarm gener
 
 
 ## Documentation of the state diagram:
+
+## Link to state diagram:
+[State Diagram](uml_models/UmlDiagrams/sateDiagram.pdf)
 
 ## Overview
 This status diagram illustrates the reaction sequence in the event of a patient shock within a health monitoring system. It describes the sequence of measures that are initiated when a critical threshold value is exceeded.
