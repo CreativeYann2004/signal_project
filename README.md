@@ -66,6 +66,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Project Members
 - Student ID: i6340643
-
+## Link to ReadMe for the UML Diagram:
+[Read ME for UML Diagram](uml_models/README%20for%20UML%20Diagram.md)
 ## UML Diagram Link:
 [UML Diagram](uml_models/SignalProject%20UML%20diagram.pdf)
+## Link to ReadME for Sequence and State Diagram:
+
