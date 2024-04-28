@@ -34,7 +34,7 @@ The sequence diagram successfully outlines the critical steps in the alarm gener
 ## Documentation of the state diagram:
 
 ## Link to state diagram:
-[State Diagram](uml_models/UmlDiagrams/sateDiagram.pdf)
+[State Diagram](uml_models/UmlDiagrams/stateDiagram.pdf)
 
 ## Overview
 This status diagram illustrates the reaction sequence in the event of a patient shock within a health monitoring system. It describes the sequence of measures that are initiated when a critical threshold value is exceeded.
