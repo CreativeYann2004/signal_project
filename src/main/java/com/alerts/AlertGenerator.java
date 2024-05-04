@@ -1,7 +1,10 @@
 package com.alerts;
 
+import java.util.List;
+
 import com.data_management.DataStorage;
 import com.data_management.Patient;
+import com.data_management.PatientRecord;
 
 /**
  * The {@code AlertGenerator} class is responsible for monitoring patient data
@@ -35,7 +38,22 @@ public class AlertGenerator {
      * @param patient the patient data to evaluate for alert conditions
      */
     public void evaluateData(Patient patient) {
-        // Implementation goes here
+        // Example conditions for triggering an alert based on the record type:
+        // Let's evaluate heart rate and blood pressure for now.
+        long now = System.currentTimeMillis();
+        List<PatientRecord> recentRecords = patient.getRecords(now - 3600000, now); // last hour records
+
+        for (PatientRecord record : recentRecords) {
+            if ("HeartRate".equals(record.getRecordType()) && (record.getMeasurementValue() > 100 || record.getMeasurementValue() < 60)) {
+                triggerAlert(new Alert(Integer.toString(patient.getPatientId()), 
+                                       record.getMeasurementValue() > 100 ? "High heart rate" : "Low heart rate", 
+                                       record.getTimestamp()));
+            } else if ("BloodPressure".equals(record.getRecordType()) && record.getMeasurementValue() > 140) {
+                triggerAlert(new Alert(Integer.toString(patient.getPatientId()), 
+                                       "High blood pressure", 
+                                       record.getTimestamp()));
+            }
+        }
     }
 
     /**
@@ -47,6 +65,8 @@ public class AlertGenerator {
      * @param alert the alert object containing details about the alert condition
      */
     private void triggerAlert(Alert alert) {
-        // Implementation might involve logging the alert or notifying staff
-    }
+        // Here we could extend functionality to notify medical staff or log the alert
+        System.out.println("Alert triggered for Patient ID: " + alert.getPatientId() +
+                           " Condition: " + alert.getCondition() +
+                           " Timestamp: " + alert.getTimestamp());
 }

@@ -2,6 +2,7 @@ package com.data_management;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a patient and manages their medical records.
@@ -36,10 +37,10 @@ public class Patient {
      *                         milliseconds since UNIX epoch
      */
     public void addRecord(double measurementValue, String recordType, long timestamp) {
+        // Create a new patient record with the provided details and add it to the list of records.
         PatientRecord record = new PatientRecord(this.patientId, measurementValue, recordType, timestamp);
         this.patientRecords.add(record);
     }
-
     /**
      * Retrieves a list of PatientRecord objects for this patient that fall within a
      * specified time range.
@@ -52,6 +53,20 @@ public class Patient {
      *         range
      */
     public List<PatientRecord> getRecords(long startTime, long endTime) {
-        // TODO Implement and test this method
+        // Use Java Streams to filter and collect patient records that fall within the time range.
+        // The filter checks each record's timestamp to see if it lies between startTime and endTime.
+        return patientRecords.stream()
+                            .filter(record -> record.getTimestamp() >= startTime && record.getTimestamp() <= endTime)
+                            .collect(Collectors.toList());
+    }
+    
+    /**
+     * Returns the unique identifier for this patient.
+     * This identifier is used across the system to associate this patient with their medical records.
+     *
+     * @return the patient ID
+     */
+    public int getPatientId() {
+        return patientId;
     }
 }
