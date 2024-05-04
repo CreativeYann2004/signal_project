@@ -28,33 +28,31 @@ public class AlertGenerator {
     }
 
     /**
-     * Evaluates the specified patient's data to determine if any alert conditions
-     * are met. If a condition is met, an alert is triggered via the
-     * {@link #triggerAlert}
-     * method. This method should define the specific conditions under which an
-     * alert
-     * will be triggered.
-     *
-     * @param patient the patient data to evaluate for alert conditions
-     */
-    public void evaluateData(Patient patient) {
-        // Example conditions for triggering an alert based on the record type:
-        // Let's evaluate heart rate and blood pressure for now.
-        long now = System.currentTimeMillis();
-        List<PatientRecord> recentRecords = patient.getRecords(now - 3600000, now); // last hour records
-
-        for (PatientRecord record : recentRecords) {
-            if ("HeartRate".equals(record.getRecordType()) && (record.getMeasurementValue() > 100 || record.getMeasurementValue() < 60)) {
+ * Evaluates the specified patient's data to determine if any alert conditions are met.
+ * If a condition is met, an alert is triggered via the {@link #triggerAlert} method.
+ * This method should define the specific conditions under which an alert will be triggered.
+ *
+ * @param patient the patient data to evaluate for alert conditions
+ */
+public void evaluateData(Patient patient) {
+    long now = System.currentTimeMillis();
+    List<PatientRecord> recentRecords = patient.getRecords(now - 3600000, now); // last hour records
+    for (PatientRecord record : recentRecords) {
+        if ("HeartRate".equals(record.getRecordType())) {
+            if (record.getMeasurementValue() > 100 || record.getMeasurementValue() < 60) {
                 triggerAlert(new Alert(Integer.toString(patient.getPatientId()), 
-                                       record.getMeasurementValue() > 100 ? "High heart rate" : "Low heart rate", 
-                                       record.getTimestamp()));
-            } else if ("BloodPressure".equals(record.getRecordType()) && record.getMeasurementValue() > 140) {
+                                    record.getMeasurementValue() > 100 ? "High heart rate" : "Low heart rate", 
+                                    record.getTimestamp()));
+            }
+        } else if ("BloodPressure".equals(record.getRecordType())) {
+            if (record.getMeasurementValue() > 140 || record.getMeasurementValue() < 90) {
                 triggerAlert(new Alert(Integer.toString(patient.getPatientId()), 
-                                       "High blood pressure", 
-                                       record.getTimestamp()));
+                                    record.getMeasurementValue() > 140 ? "High blood pressure" : "Low blood pressure", 
+                                    record.getTimestamp()));
             }
         }
     }
+}
 
     /**
      * Triggers an alert for the monitoring system. This method can be extended to
@@ -67,6 +65,6 @@ public class AlertGenerator {
     private void triggerAlert(Alert alert) {
         // Here we could extend functionality to notify medical staff or log the alert
         System.out.println("Alert triggered for Patient ID: " + alert.getPatientId() +
-                           " Condition: " + alert.getCondition() +
-                           " Timestamp: " + alert.getTimestamp());
+                        " Condition: " + alert.getCondition() +
+                        " Timestamp: " + alert.getTimestamp());
 }
