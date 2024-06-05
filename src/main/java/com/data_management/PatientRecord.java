@@ -1,30 +1,16 @@
 package com.data_management;
 
-/**
- * Represents a single record of patient data at a specific point in time.
- * This class stores all necessary details for a single observation or
- * measurement
- * taken from a patient, including the type of record (such as ECG, blood
- * pressure),
- * the measurement value, and the exact timestamp when the measurement was
- * taken.
- */
+import java.util.List;
+
 public class PatientRecord {
     private int patientId;
-    private String recordType; // Example: ECG, blood pressure, etc.
-    private double measurementValue; // Example: heart rate
+    private String recordType;
+    private double measurementValue;
+    private double systolicValue;
+    private double diastolicValue;
+    private List<Double> beatIntervals;
     private long timestamp;
 
-    /**
-     * Constructs a new patient record with specified details.
-     * 
-     * @param patientId        the unique identifier for the patient
-     * @param measurementValue the numerical value of the recorded measurement
-     * @param recordType       the type of measurement (e.g., "ECG", "Blood
-     *                         Pressure")
-     * @param timestamp        the time at which the measurement was recorded, in
-     *                         milliseconds since epoch
-     */
     public PatientRecord(int patientId, double measurementValue, String recordType, long timestamp) {
         this.patientId = patientId;
         this.measurementValue = measurementValue;
@@ -32,39 +18,39 @@ public class PatientRecord {
         this.timestamp = timestamp;
     }
 
-    /**
-     * Returns the patient ID associated with this record.
-     * 
-     * @return the patient ID
-     */
+    public PatientRecord(int patientId, double systolicValue, double diastolicValue, String recordType, long timestamp) {
+        this.patientId = patientId;
+        this.systolicValue = systolicValue;
+        this.diastolicValue = diastolicValue;
+        this.recordType = recordType;
+        this.timestamp = timestamp;
+    }
+
     public int getPatientId() {
         return patientId;
     }
+    
+    public String getRecordType() {
+        return recordType;
+    }
 
-    /**
-     * Returns the measurement value of this record.
-     * 
-     * @return the measurement value
-     */
     public double getMeasurementValue() {
         return measurementValue;
     }
 
-    /**
-     * Returns the timestamp when this record was taken.
-     * 
-     * @return the timestamp in milliseconds since epoch
-     */
+    public double getSystolicValue() {
+        return systolicValue;
+    }
+
+    public double getDiastolicValue() {
+        return diastolicValue;
+    }
+
     public long getTimestamp() {
         return timestamp;
     }
 
-    /**
-     * Returns the type of record (e.g., "ECG", "Blood Pressure").
-     * 
-     * @return the record type
-     */
-    public String getRecordType() {
-        return recordType;
+    public List<Double> getBeatIntervals() {
+        return beatIntervals;
     }
 }

@@ -1,70 +1,55 @@
 package com.alerts;
 
-import java.util.List;
-
+import com.alerts.conditions.BloodPressureTrendEvaluator;
+import com.alerts.conditions.CompositeHealthScoreCalculator;
+import com.alerts.conditions.ConditionEvaluator;
+import com.cardio_generator.outputs.OutputStrategy;
 import com.data_management.DataStorage;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
-/**
- * The {@code AlertGenerator} class is responsible for monitoring patient data
- * and generating alerts when certain predefined conditions are met. This class
- * relies on a {@link DataStorage} instance to access patient data and evaluate
- * it against specific health criteria.
- */
+import java.util.List;
+
 public class AlertGenerator {
     private DataStorage dataStorage;
+    private OutputStrategy outputStrategy;
+    private ConditionEvaluator conditionEvaluator;
+    private CompositeHealthScoreCalculator healthScoreCalculator;
+    private BloodPressureTrendEvaluator bloodPressureTrendEvaluator;
 
-    /**
-     * Constructs an {@code AlertGenerator} with a specified {@code DataStorage}.
-     * The {@code DataStorage} is used to retrieve patient data that this class
-     * will monitor and evaluate.
-     *
-     * @param dataStorage the data storage system that provides access to patient
-     *                    data
-     */
-    public AlertGenerator(DataStorage dataStorage) {
+    public AlertGenerator(DataStorage dataStorage, OutputStrategy outputStrategy,
+                        ConditionEvaluator conditionEvaluator, CompositeHealthScoreCalculator healthScoreCalculator,
+                        BloodPressureTrendEvaluator bloodPressureTrendEvaluator) {
         this.dataStorage = dataStorage;
+        this.outputStrategy = outputStrategy;
+        this.conditionEvaluator = conditionEvaluator;
+        this.healthScoreCalculator = healthScoreCalculator;
+        this.bloodPressureTrendEvaluator = bloodPressureTrendEvaluator;
     }
 
-    /**
- * Evaluates the specified patient's data to determine if any alert conditions are met.
- * If a condition is met, an alert is triggered via the {@link #triggerAlert} method.
- * This method should define the specific conditions under which an alert will be triggered.
- *
- * @param patient the patient data to evaluate for alert conditions
- */
-public void evaluateData(Patient patient) {
-    long now = System.currentTimeMillis();
-    List<PatientRecord> recentRecords = patient.getRecords(now - 3600000, now); // last hour records
-    for (PatientRecord record : recentRecords) {
-        if ("HeartRate".equals(record.getRecordType())) {
-            if (record.getMeasurementValue() > 100 || record.getMeasurementValue() < 60) {
-                triggerAlert(new Alert(Integer.toString(patient.getPatientId()), 
-                                    record.getMeasurementValue() > 100 ? "High heart rate" : "Low heart rate", 
-                                    record.getTimestamp()));
-            }
-        } else if ("BloodPressure".equals(record.getRecordType())) {
-            if (record.getMeasurementValue() > 140 || record.getMeasurementValue() < 90) {
-                triggerAlert(new Alert(Integer.toString(patient.getPatientId()), 
-                                    record.getMeasurementValue() > 140 ? "High blood pressure" : "Low blood pressure", 
-                                    record.getTimestamp()));
+    public void evaluateData(Patient patient) {
+        long currentTime = System.currentTimeMillis();
+        List<PatientRecord> recentRecords = dataStorage.getRecords(patient.getPatientId(), currentTime - 3600000, currentTime);
+
+        double healthScore = healthScoreCalculator.calculateCompositeHealthScore(recentRecords);
+
+        if (healthScore >= 0.5) {
+            outputStrategy.output(patient.getPatientId(), currentTime, "Alert", 
+                "Alert for Patient ID: " + patient.getPatientId() + " | Condition: Health score indicates potential distress | Timestamp: " + currentTime);
+        }
+
+        for (PatientRecord record : recentRecords) {
+            if (conditionEvaluator.checkAndTriggerAlert(patient, record, currentTime)) {
+                outputStrategy.output(patient.getPatientId(), currentTime, "Alert", 
+                    "Alert for Patient ID: " + patient.getPatientId() + " | Condition: Specific condition detected | Timestamp: " + currentTime);
             }
         }
-    }
-}
 
-    /**
-     * Triggers an alert for the monitoring system. This method can be extended to
-     * notify medical staff, log the alert, or perform other actions. The method
-     * currently assumes that the alert information is fully formed when passed as
-     * an argument.
-     *
-     * @param alert the alert object containing details about the alert condition
-     */
-    private void triggerAlert(Alert alert) {
-        // Here we could extend functionality to notify medical staff or log the alert
-        System.out.println("Alert triggered for Patient ID: " + alert.getPatientId() +
-                        " Condition: " + alert.getCondition() +
-                        " Timestamp: " + alert.getTimestamp());
+        if (conditionEvaluator.checkForCombinedConditions(patient, currentTime)) {
+            outputStrategy.output(patient.getPatientId(), currentTime, "Alert", 
+                "Alert for Patient ID: " + patient.getPatientId() + " | Condition: Combined conditions detected | Timestamp: " + currentTime);
+        }
+
+        bloodPressureTrendEvaluator.checkBloodPressureTrends(recentRecords, patient, currentTime);
+    }
 }
