@@ -1,43 +1,64 @@
 package com.data_management;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Stream;
 
+/**
+ * Class for reading patient data from a file and storing it in DataStorage.
+ */
 public class FileDataReader implements DataReader {
-    private final String directoryPath;
+    private String filePath;
 
-    public FileDataReader(String directoryPath) {
-        this.directoryPath = directoryPath;
+    /**
+     * Constructs a FileDataReader with the specified file path.
+     *
+     * @param filePath The path of the file to read data from.
+     */
+    public FileDataReader(String filePath) {
+        this.filePath = filePath;
     }
 
+    /**
+     * Reads data from the file and stores it in the specified data storage.
+     *
+     * @param dataStorage The data storage where the data will be stored.
+     * @throws IOException If an I/O error occurs.
+     */
     @Override
     public void readData(DataStorage dataStorage) throws IOException {
-        Files.walk(Paths.get(directoryPath))
-            .filter(Files::isRegularFile)
-            .forEach(file -> {
-                try (Stream<String> lines = Files.lines(file, StandardCharsets.UTF_8)) {
-                    lines.forEach(line -> parseAndStore(line, dataStorage));
-                } catch (IOException e) {
-                    System.err.println("Failed to read file: " + file + ", error: " + e.getMessage());
-                }
-            });
-    }
-
-    public void parseAndStore(String line, DataStorage dataStorage) {
-        String[] parts = line.split(",");
-        if (parts.length == 4) {
-            try {
-                int patientId = Integer.parseInt(parts[0].trim());
-                double measurementValue = Double.parseDouble(parts[1].trim());
-                String recordType = parts[2].trim();
-                long timestamp = Long.parseLong(parts[3].trim());
-                dataStorage.addPatientData(patientId, measurementValue, recordType, timestamp);
-            } catch (NumberFormatException ex) {
-                System.err.println("Error parsing data: " + line);
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                parseAndStore(line, dataStorage);
             }
         }
+    }
+
+    /**
+     * Unsupported operation for FileDataReader. Throws UnsupportedOperationException.
+     *
+     * @param dataStorage The data storage where the data would be stored.
+     * @throws IOException                  If an I/O error occurs.
+     * @throws UnsupportedOperationException Always thrown for this implementation.
+     */
+    @Override
+    public void connectAndReadData(DataStorage dataStorage) throws IOException {
+        throw new UnsupportedOperationException("FileDataReader does not support connectAndReadData");
+    }
+
+    /**
+     * Parses a line of data and stores it in the specified data storage.
+     *
+     * @param line        The line of data to be parsed.
+     * @param dataStorage The data storage where the parsed data will be stored.
+     */
+    public void parseAndStore(String line, DataStorage dataStorage) {
+        String[] parts = line.split(",");
+        int patientId = Integer.parseInt(parts[0].trim());
+        double measurementValue = Double.parseDouble(parts[1].trim());
+        String recordType = parts[2].trim();
+        long timestamp = Long.parseLong(parts[3].trim());
+        dataStorage.addPatientData(patientId, measurementValue, recordType, timestamp);
     }
 }

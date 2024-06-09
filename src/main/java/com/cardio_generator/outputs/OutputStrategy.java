@@ -5,7 +5,6 @@ package com.cardio_generator.outputs;
  * Implementations of this interface determine how and where the data for each patient 
  * into a console, file or other medium.
  */
-
 public interface OutputStrategy {
     /**
      * Outputs the generated data for a patient at a specific point in time.

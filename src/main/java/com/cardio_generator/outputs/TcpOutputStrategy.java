@@ -5,14 +5,15 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
+
 /**
  * Implements the {@link OutputStrategy} for sending output data via TCP.
  * This strategy sets up a TCP server on the specified port and waits for a client connection to send data.
- * to send data. As soon as a client is connected, it sends formatted patient data via this connection.
+ * As soon as a client is connected, it sends formatted patient data via this connection.
  *
  * <p>This class handles the creation of a server socket and manages client connections in a
  * separate thread so as not to block the main application flow. It is suitable for real-time data streaming
- * Scenarios where data needs to be sent immediately and continuously</p>.
+ * scenarios where data needs to be sent immediately and continuously.</p>
  *
  * <p>Example application:
  * <pre>
@@ -27,6 +28,11 @@ public class TcpOutputStrategy implements OutputStrategy {
     private Socket clientSocket;
     private PrintWriter out;
 
+    /**
+     * Constructor to initialize TcpOutputStrategy with the specified port.
+     *
+     * @param port The port on which the TCP server will listen for client connections.
+     */
     public TcpOutputStrategy(int port) {
         try {
             serverSocket = new ServerSocket(port);
@@ -47,6 +53,14 @@ public class TcpOutputStrategy implements OutputStrategy {
         }
     }
 
+    /**
+     * Sends the formatted patient data via the TCP connection.
+     *
+     * @param patientId The ID of the patient.
+     * @param timestamp The timestamp of the data.
+     * @param label     The label describing the type of data.
+     * @param data      The actual data value.
+     */
     @Override
     public void output(int patientId, long timestamp, String label, String data) {
         if (out != null) {

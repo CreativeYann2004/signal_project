@@ -1,29 +1,43 @@
 package data_management;
 
-import com.data_management.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
+import com.data_management.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link DataStorage} class.
+ */
 class DataStorageTest {
 
     private DataStorage storage;
 
+    /**
+     * Sets up the test environment before each test.
+     * Initializes the {@link DataStorage} instance.
+     */
     @BeforeEach
     void setUp() {
-        storage = new DataStorage();
+        storage = DataStorage.getInstance();
+        storage.clear(); // Clear storage before each test to ensure isolation
     }
 
+    /**
+     * Tests integration with {@link FileDataReader} to read data from files and store it in {@link DataStorage}.
+     *
+     * @throws IOException If an I/O error occurs during reading data.
+     */
     @Test
     void testDataReaderIntegration() throws IOException {
         // Use the correct path to your test data directory
-        String testDirectoryPath = "src\\test\\resources\\testData\\testData.txt";
+        String testDirectoryPath = "src/test/resources/testData/testData.txt";
         FileDataReader reader = new FileDataReader(testDirectoryPath);
         reader.readData(storage);
 
@@ -33,6 +47,9 @@ class DataStorageTest {
         assertEquals(100.0, records.get(0).getMeasurementValue(), "Check the value of the first record");
     }
 
+    /**
+     * Tests adding and retrieving patient records.
+     */
     @Test
     void testAddAndGetRecords() {
         // Assume these are correctly formatted data inputs.
@@ -45,12 +62,18 @@ class DataStorageTest {
         assertEquals(120.0, records.get(1).getMeasurementValue(), "Second record should match");
     }
 
+    /**
+     * Tests retrieving records for a non-existing patient.
+     */
     @Test
     void testGetRecordsWithNoData() {
         List<PatientRecord> records = storage.getRecords(2, 1622540000000L, 1622550000000L);
         assertTrue(records.isEmpty(), "Should return an empty list for non-existing patient");
     }
 
+    /**
+     * Tests error handling with invalid input.
+     */
     @Test
     void testErrorHandlingWithInvalidInput() {
         assertThrows(NumberFormatException.class, () -> {
@@ -58,6 +81,9 @@ class DataStorageTest {
         }, "Should throw NumberFormatException for non-numeric values");
     }
 
+    /**
+     * Tests error handling with an invalid record type.
+     */
     @Test
     void testInvalidRecordType() {
         assertThrows(IllegalArgumentException.class, () -> {
@@ -65,6 +91,11 @@ class DataStorageTest {
         }, "Should throw IllegalArgumentException for invalid record type");
     }
 
+    /**
+     * Tests concurrent access to the {@link DataStorage} instance.
+     *
+     * @throws InterruptedException If the thread is interrupted while waiting.
+     */
     @Test
     void testConcurrentAccess() throws InterruptedException {
         ExecutorService service = Executors.newFixedThreadPool(10);
@@ -77,6 +108,9 @@ class DataStorageTest {
         assertEquals(1000, storage.getRecords(1, 0, Long.MAX_VALUE).size(), "Should handle 1000 concurrent updates correctly");
     }
 
+    /**
+     * Tests boundary conditions for retrieving records.
+     */
     @Test
     void testBoundaryConditions() {
         storage.addPatientData(1, 100.0, "HeartRate", 1622542800000L);
@@ -84,6 +118,9 @@ class DataStorageTest {
         assertEquals(1, records.size(), "Should retrieve the record exactly at the boundary");
     }
 
+    /**
+     * Tests handling of duplicate entries in the data storage.
+     */
     @Test
     void testDuplicateEntries() {
         storage.addPatientData(1, 100.0, "HeartRate", 1622542800000L);
@@ -92,6 +129,9 @@ class DataStorageTest {
         assertEquals(2, records.size(), "Should retrieve two identical records");
     }
 
+    /**
+     * Tests error handling with empty fields.
+     */
     @Test
     void testEmptyFields() {
         assertThrows(IllegalArgumentException.class, () -> {
@@ -99,6 +139,9 @@ class DataStorageTest {
         }, "Should throw IllegalArgumentException for empty record type");
     }
 
+    /**
+     * Tests handling of a large volume of data.
+     */
     @Test
     void testLargeVolumeData() {
         IntStream.range(0, 10000).forEach(i -> storage.addPatientData(1, 100.0 + i, "HeartRate", 1622542800000L + i));

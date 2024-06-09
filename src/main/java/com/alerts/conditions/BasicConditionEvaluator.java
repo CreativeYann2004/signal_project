@@ -7,14 +7,31 @@ import com.cardio_generator.outputs.OutputStrategy;
 
 import java.util.List;
 
+/**
+ * This class evaluates various medical conditions for a patient and triggers alerts based on specified criteria.
+ * It uses an output strategy to handle the triggered alerts.
+ */
 public class BasicConditionEvaluator implements ConditionEvaluator {
 
     private final OutputStrategy outputStrategy;
 
+    /**
+     * Constructor to initialize BasicConditionEvaluator with an OutputStrategy.
+     *
+     * @param outputStrategy The strategy to handle the output of alerts.
+     */
     public BasicConditionEvaluator(OutputStrategy outputStrategy) {
         this.outputStrategy = outputStrategy;
     }
 
+    /**
+     * Checks a patient's record for any condition that meets the alert criteria and triggers an alert if necessary.
+     *
+     * @param patient   The patient whose record is being checked.
+     * @param record    The patient record to evaluate.
+     * @param timestamp The current time in milliseconds.
+     * @return true if an alert was triggered, false otherwise.
+     */
     @Override
     public boolean checkAndTriggerAlert(Patient patient, PatientRecord record, long timestamp) {
         if (evaluateCondition(record)) {
@@ -25,6 +42,12 @@ public class BasicConditionEvaluator implements ConditionEvaluator {
         return false;
     }
 
+    /**
+     * Evaluates the condition based on the type of the patient record.
+     *
+     * @param record The patient record to evaluate.
+     * @return true if the condition meets the alert criteria, false otherwise.
+     */
     private boolean evaluateCondition(PatientRecord record) {
         switch (record.getRecordType()) {
             case "HeartRate":
@@ -40,6 +63,12 @@ public class BasicConditionEvaluator implements ConditionEvaluator {
         }
     }
 
+    /**
+     * Checks if the ECG intervals are irregular based on their variance.
+     *
+     * @param intervals The list of beat intervals from the ECG.
+     * @return true if the intervals are irregular, false otherwise.
+     */
     private boolean isIrregular(List<Double> intervals) {
         if (intervals == null || intervals.isEmpty()) {
             return false;
@@ -49,6 +78,13 @@ public class BasicConditionEvaluator implements ConditionEvaluator {
         return Math.sqrt(variance) > 50;
     }
 
+    /**
+     * Checks for combined conditions over the past hour and triggers an alert if both conditions are met.
+     *
+     * @param patient The patient whose records are being checked.
+     * @param now     The current time in milliseconds.
+     * @return true if an alert was triggered, false otherwise.
+     */
     @Override
     public boolean checkForCombinedConditions(Patient patient, long now) {
         List<PatientRecord> recentRecords = patient.getRecords(now - 3600000, now);
@@ -65,6 +101,12 @@ public class BasicConditionEvaluator implements ConditionEvaluator {
         return false;
     }
 
+    /**
+     * Generates an alert message based on the type of the patient record.
+     *
+     * @param record The patient record that triggered the alert.
+     * @return The alert message.
+     */
     private String getAlertMessage(PatientRecord record) {
         switch (record.getRecordType()) {
             case "HeartRate":
@@ -80,6 +122,11 @@ public class BasicConditionEvaluator implements ConditionEvaluator {
         }
     }
 
+    /**
+     * Triggers an alert using the output strategy.
+     *
+     * @param alert The alert to be triggered.
+     */
     private void triggerAlert(Alert alert) {
         outputStrategy.output(alert.getPatientId(), alert.getTimestamp(), "Alert", alert.getFormattedAlert());
     }

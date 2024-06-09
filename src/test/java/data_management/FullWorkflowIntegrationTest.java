@@ -9,19 +9,27 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import static org.mockito.Mockito.*;
-
+/**
+ * Integration tests for the full workflow of generating ECG data and verifying output through {@link OutputStrategy}.
+ */
 public class FullWorkflowIntegrationTest {
 
     private ECGDataGenerator ecgDataGenerator;
     private OutputStrategy outputStrategy;
 
+    /**
+     * Sets up the test environment before each test.
+     * Initializes the mock {@link OutputStrategy} and the {@link ECGDataGenerator} instance.
+     */
     @BeforeEach
     public void setUp() {
         outputStrategy = mock(OutputStrategy.class);
         ecgDataGenerator = new ECGDataGenerator(1);  // Assuming 1 patient for the test
     }
 
+    /**
+     * Tests the generation of ECG data and verifies that the output strategy is called with the correct parameters.
+     */
     @Test
     public void testGenerate() {
         int patientId = 1;
@@ -39,6 +47,5 @@ public class FullWorkflowIntegrationTest {
 
         assertEquals(patientId, patientIdCaptor.getValue());
         assertEquals("ECG", labelCaptor.getValue());
-        // We won't assert the exact value of data because it's randomly generated
     }
 }

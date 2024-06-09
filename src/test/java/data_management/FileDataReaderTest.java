@@ -1,4 +1,5 @@
 package data_management;
+
 import com.data_management.*;
 
 import static org.mockito.Mockito.*;
@@ -10,23 +11,35 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for the {@link FileDataReader} class.
+ */
 class FileDataReaderTest {
 
     private DataStorage dataStorageMock;
     private FileDataReader fileDataReader;
 
+    /**
+     * Sets up the test environment before each test.
+     * Initializes the mock {@link DataStorage} and the {@link FileDataReader} instance.
+     */
     @BeforeEach
     void setUp() {
         dataStorageMock = mock(DataStorage.class);
         fileDataReader = new FileDataReader("testDirectory");
     }
 
+    /**
+     * Tests the reading and parsing of data from files.
+     * Verifies that the parsed data is correctly added to the {@link DataStorage}.
+     *
+     * @throws IOException If an I/O error occurs during reading data.
+     */
     @Test
     void testReadData() throws IOException {
         // Assuming parseAndStore is modified to be protected or package-private for testing purposes
         // Alternatively, use a spy to verify interactions with dataStorage
 
-        // Example of changing large values to long
         List<String> testData = Arrays.asList(
             "1, 100.0, HeartRate, 1627836123000", // Valid timestamp within int range
             "2, 200.0, BloodPressure, 1627836123000",
