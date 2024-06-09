@@ -1,0 +1,2 @@
+The generators are not done yet because they were added by you and the rest I would say is fully working and therfore
+i did not add other testfunctions yet.
