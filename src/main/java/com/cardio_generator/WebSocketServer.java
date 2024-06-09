@@ -1,9 +1,8 @@
-package data_management;
-import org.junit.jupiter.api.TestInstance;
+package com.cardio_generator;
 
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
 
-public class WebSocketServerTest {
+public class WebSocketServer {
     public static void main(String[] args) {
         WebSocketOutputStrategy server = new WebSocketOutputStrategy(8080);
 
